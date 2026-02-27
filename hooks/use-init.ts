@@ -15,6 +15,8 @@ interface InitData {
   }
   authConfigured: boolean
   aiConfigured: boolean
+  dbConfigured: boolean
+  blobConfigured: boolean
 }
 
 const fetcher = async (url: string): Promise<InitData> => {

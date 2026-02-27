@@ -2,9 +2,18 @@ import { createAdminClient } from "@/lib/supabase/admin"
 import type { NewUser, NewRateLimit } from "./types"
 
 /**
- * Database query functions for user and usage tracking
- * These are server-side only functions using Supabase JS
+ * Database query functions for user and usage tracking.
+ * These are server-side only functions using Supabase JS.
+ *
+ * All functions gracefully return null / empty results when Supabase
+ * is not configured (e.g. fresh fork of the template), so the app can
+ * still run in a degraded mode and show a friendly setup banner instead
+ * of crashing.
  */
+
+function getClient() {
+  return createAdminClient()
+}
 
 // ============= User Operations =============
 
@@ -20,7 +29,8 @@ export async function getOrCreateUser(data: NewUser) {
 }
 
 export async function createUser(data: NewUser) {
-  const supabase = createAdminClient()
+  const supabase = getClient()
+  if (!supabase) return null
 
   const { data: user, error } = await supabase.from("users").insert(data).select().single()
 
@@ -32,7 +42,8 @@ export async function createUser(data: NewUser) {
 }
 
 export async function getUserByEmail(email: string) {
-  const supabase = createAdminClient()
+  const supabase = getClient()
+  if (!supabase) return null
 
   const { data: user, error } = await supabase.from("users").select("*").eq("email", email).maybeSingle()
 
@@ -55,7 +66,9 @@ export async function trackImageGeneration(data: {
   tokens: number
   metadata?: Record<string, any>
 }) {
-  const supabase = createAdminClient()
+  const supabase = getClient()
+  if (!supabase) return null
+
   const { userEmail, cost, tokens, metadata } = data
 
   const { data: usageRecord, error } = await supabase
@@ -81,7 +94,8 @@ export async function trackImageGeneration(data: {
  * Get usage history for a user
  */
 export async function getUserUsageHistory(userEmail: string, limit = 50) {
-  const supabase = createAdminClient()
+  const supabase = getClient()
+  if (!supabase) return []
 
   const { data, error } = await supabase
     .from("usage")
@@ -111,7 +125,9 @@ export async function getUserUsageHistory(userEmail: string, limit = 50) {
  * Get rate limit record for an IP on a specific date
  */
 export async function getRateLimitForIP(ip: string, date: string) {
-  const supabase = createAdminClient()
+  const supabase = getClient()
+  if (!supabase) return null
+
   const { data: record, error } = await supabase
     .from("rate_limits")
     .select("*")
@@ -130,7 +146,9 @@ export async function getRateLimitForIP(ip: string, date: string) {
  * Create a new rate limit record
  */
 export async function createRateLimit(data: NewRateLimit) {
-  const supabase = createAdminClient()
+  const supabase = getClient()
+  if (!supabase) return null
+
   const { data: record, error } = await supabase
     .from("rate_limits")
     .insert({
@@ -155,7 +173,8 @@ export async function createRateLimit(data: NewRateLimit) {
  * a SELECT + UPDATE (which was vulnerable to race conditions and slower).
  */
 export async function upsertAndIncrementRateLimit(ip: string, date: string) {
-  const supabase = createAdminClient()
+  const supabase = getClient()
+  if (!supabase) return { ip, date, count: 0, reset_time: new Date().toISOString() }
 
   // First try to get existing record to know the current count
   const existing = await getRateLimitForIP(ip, date)
@@ -212,7 +231,8 @@ export async function incrementRateLimit(ip: string, date: string) {
  * Extracts durationMs from the metadata JSON of recent image_generation records.
  */
 export async function getRecentGenerationDurations(limit = 50): Promise<number[]> {
-  const supabase = createAdminClient()
+  const supabase = getClient()
+  if (!supabase) return []
 
   const { data, error } = await supabase
     .from("usage")
@@ -254,7 +274,8 @@ export async function saveGeneration(data: {
   mode?: string
   metadata?: Record<string, any>
 }) {
-  const supabase = createAdminClient()
+  const supabase = getClient()
+  if (!supabase) return null
 
   // User is already created at login time in /api/auth/callback.
   // No need to call getOrCreateUser on every save.
@@ -284,7 +305,8 @@ export async function saveGeneration(data: {
  * Get generations for a user
  */
 export async function getUserGenerations(userEmail: string, limit = 5, offset = 0) {
-  const supabase = createAdminClient()
+  const supabase = getClient()
+  if (!supabase) return []
 
   const { data, error } = await supabase
     .from("generations")
@@ -313,7 +335,8 @@ export async function getUserGenerations(userEmail: string, limit = 5, offset = 
  * Delete a generation
  */
 export async function deleteGeneration(id: string, userEmail: string) {
-  const supabase = createAdminClient()
+  const supabase = getClient()
+  if (!supabase) return
 
   const { error } = await supabase.from("generations").delete().eq("id", id).eq("user_email", userEmail)
 

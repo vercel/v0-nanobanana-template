@@ -530,7 +530,14 @@ export function ImageCombiner(): ReactElement {
                 </div>
               </div>
 
-              {initData && <SetupBanner authConfigured={initData.authConfigured} aiConfigured={initData.aiConfigured} />}
+              {initData && (
+                <SetupBanner
+                  authConfigured={initData.authConfigured}
+                  aiConfigured={initData.aiConfigured}
+                  dbConfigured={initData.dbConfigured}
+                  blobConfigured={initData.blobConfigured}
+                />
+              )}
 
               <div className="flex flex-col gap-4 xl:gap-0">
                 <div

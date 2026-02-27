@@ -36,12 +36,16 @@ export async function GET(request: NextRequest) {
 
     const authConfigured = !!(process.env.VERCEL_OAUTH_CLIENT_ID && process.env.VERCEL_OAUTH_CLIENT_SECRET)
     const aiConfigured = !!process.env.AI_GATEWAY_API_KEY
+    const dbConfigured = !!(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY)
+    const blobConfigured = !!process.env.BLOB_READ_WRITE_TOKEN
 
     return NextResponse.json({
       user,
       usage,
       authConfigured,
       aiConfigured,
+      dbConfigured,
+      blobConfigured,
     })
   } catch (error) {
     console.error("[init] Error:", error)
@@ -50,6 +54,8 @@ export async function GET(request: NextRequest) {
       usage: { allowed: true, remaining: 0, resetTime: 0 },
       authConfigured: false,
       aiConfigured: false,
+      dbConfigured: false,
+      blobConfigured: false,
     })
   }
 }
