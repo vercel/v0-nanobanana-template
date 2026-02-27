@@ -664,15 +664,6 @@ export function ImageCombiner(): ReactElement {
               </div>
 
               <div className="mt-3 md:mt-4 border-t border-white/10 pt-3 md:pt-5 flex items-center justify-center gap-2 sm:gap-4 text-[10px] sm:text-xs text-white/60 flex-shrink-0">
-                <a
-                  href="https://v0.app/templates/nano-banana-pro-playground-hkRpZoLOrJC"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-white/80 transition-colors"
-                >
-                  Clone this app
-                </a>
-                <span className="text-white/20">•</span>
                 <button onClick={() => setShowHowItWorks(true)} className="hover:text-white/80 transition-colors">
                   How it works
                 </button>
