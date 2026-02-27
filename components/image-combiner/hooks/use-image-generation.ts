@@ -25,7 +25,6 @@ interface UseImageGenerationProps {
   onImageUpload: (file: File, imageNumber: 1 | 2) => Promise<void>
   onOutOfCredits?: () => void
   onCreditCardRequired?: () => void
-  onRateLimit?: () => void
 }
 
 interface GenerateImageOptions {
@@ -168,7 +167,6 @@ export function useImageGeneration({
   onImageUpload,
   onOutOfCredits,
   onCreditCardRequired,
-  onRateLimit,
 }: UseImageGenerationProps) {
   // Check for pending runs BEFORE first render to avoid flash
   const pendingRunsRef = useRef(() => {
@@ -557,11 +555,7 @@ export function useImageGeneration({
             const errorData = await response.json()
             stopProgress()
             setGenerations((prev) => prev.filter((gen) => gen.id !== generationId))
-            if (onRateLimit) {
-              onRateLimit()
-            } else {
-              onToast(errorData.error || "Service temporarily unavailable. Please try again shortly.", "error")
-            }
+            onToast(errorData.error || "Service temporarily unavailable. Please try again shortly.", "error")
             return
           }
 

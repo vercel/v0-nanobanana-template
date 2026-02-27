@@ -172,7 +172,7 @@ export function ImageCombiner(): ReactElement {
     addGeneration,
     onToast: showToast,
     onImageUpload: handleImageUpload,
-    onRateLimit: () => setShowAuthModal(true),
+
   })
 
   // Derived state

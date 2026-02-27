@@ -42,19 +42,13 @@ export async function POST(request: NextRequest) {
 
     const isAuthenticated = !!session?.accessToken
 
+    // Track usage for anonymous users (informational only, does not block)
     let usage: UsageLimitResult | null = null
     if (!isAuthenticated) {
-      usage = await checkUsageLimit(ip)
-      if (!usage.allowed) {
-        const resetDate = new Date(usage.resetTime)
-        return NextResponse.json<ErrorResponse>(
-          {
-            error: "Daily limit reached",
-            message: `You've used your free generation. Sign in with Vercel for unlimited access, or try again after ${resetDate.toLocaleTimeString()}.`,
-            resetTime: usage.resetTime,
-          },
-          { status: 429, headers: getRateLimitHeaders(usage) },
-        )
+      try {
+        usage = await checkUsageLimit(ip)
+      } catch {
+        // Usage tracking is best-effort; don't block generation
       }
     }
 

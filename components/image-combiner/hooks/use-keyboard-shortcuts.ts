@@ -50,10 +50,6 @@ export function useKeyboardShortcuts({
         e.preventDefault()
         if (canGenerate) {
           if (!isAuthenticated) {
-            if (remaining <= 0) {
-              onShowAuthModal()
-              return
-            }
             decrementOptimistic()
             savePendingAndGenerate()
             return
@@ -62,7 +58,7 @@ export function useKeyboardShortcuts({
         }
       }
     },
-    [canGenerate, onGenerate, isAuthenticated, remaining, decrementOptimistic, onShowAuthModal, savePendingAndGenerate],
+    [canGenerate, onGenerate, isAuthenticated, decrementOptimistic, savePendingAndGenerate],
   )
 
   const handleGlobalKeyboard = useCallback(

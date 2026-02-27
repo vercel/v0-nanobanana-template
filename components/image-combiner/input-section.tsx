@@ -25,10 +25,8 @@ interface AnonGenerateButtonProps extends React.ComponentProps<typeof Button> {
 const AnonGenerateButton = memo(function AnonGenerateButton({
   children,
   onClick,
-  remaining,
   decrementOptimistic,
   usageLoading,
-  onShowAuthModal,
   savePendingAndGenerate,
   ...props
 }: AnonGenerateButtonProps) {
@@ -40,26 +38,11 @@ const AnonGenerateButton = memo(function AnonGenerateButton({
     )
   }
 
-  if (remaining === 0) {
-    return (
-      <Button
-        onClick={(e) => {
-          e.preventDefault()
-          onShowAuthModal()
-        }}
-        variant="outline"
-        className={btnClassName}
-      >
-        Run
-      </Button>
-    )
-  }
-
   return (
     <Button
       {...props}
       className={btnClassName}
-      onClick={(e) => {
+      onClick={() => {
         decrementOptimistic()
         savePendingAndGenerate()
       }}
